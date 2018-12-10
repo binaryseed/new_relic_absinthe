@@ -32,7 +32,8 @@ defmodule NewRelicAbsinthe.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:new_relic_agent, ">= 1.0.5"},
+      # TODO: depend on next release
+      {:new_relic_agent, ">= 1.3.0"},
       {:absinthe, ">= 1.4.0"},
       {:ex_doc, ">= 0.0.0", only: :dev}
     ]
