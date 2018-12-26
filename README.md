@@ -1,6 +1,11 @@
 # New Relic Absinthe
 
-This package will be a lightweight adapter that sends `Absinthe` instrumentation data to New Relic.
+This package adds `Absinthe` specific instrumentation on top of the new_relic_agent package. You may use all the built-in capabilities of the New Relic Agent!
+
+Check out the agent for more:
+
+* https://github.com/newrelic/elixir_agent
+* https://hexdocs.pm/new_relic_agent
 
 ## Installation
 
