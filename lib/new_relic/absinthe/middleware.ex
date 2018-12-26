@@ -7,24 +7,19 @@ defmodule NewRelic.Absinthe.Middleware do
     start_time = System.system_time()
     start_time_mono = System.monotonic_time()
 
-    {span, parent_span} =
-      NewRelic.DistributedTrace.set_current_span(
-        label: Absinthe.Resolution.path(res),
-        ref: make_ref()
-      )
+    instrument_operation(res.acc[__MODULE__], res)
 
     %{
       res
-      | middleware:
+      | acc: Map.put_new(res.acc, __MODULE__, :instrumented_operation),
+        middleware:
           res.middleware ++
             [
               {{__MODULE__, :complete},
                [
                  resolver_mfa: resolver_mfa(resolver_fn),
                  start_time: start_time,
-                 start_time_mono: start_time_mono,
-                 span: span,
-                 parent_span: parent_span
+                 start_time_mono: start_time_mono
                ]}
             ]
     }
@@ -35,29 +30,16 @@ defmodule NewRelic.Absinthe.Middleware do
   def complete(%{state: :resolved} = res,
         resolver_mfa: {resolver_mod, resolver_fun, resolver_arity},
         start_time: start_time,
-        start_time_mono: start_time_mono,
-        span: span,
-        parent_span: parent_span
+        start_time_mono: start_time_mono
       ) do
     end_time_mono = System.monotonic_time()
     path = Absinthe.Resolution.path(res) |> Enum.join(".")
     return_type = Absinthe.Type.name(res.definition.schema_node.type, res.schema)
     args = res.arguments |> Map.to_list()
+    span = {Absinthe.Resolution.path(res), make_ref()}
 
     duration_ms =
       System.convert_time_unit(end_time_mono - start_time_mono, :native, :milliseconds)
-
-    # TODO: only do once:
-    # TODO: handle without operation.name
-    operation = List.last(res.path)
-
-    NewRelic.add_attributes(
-      operation: operation.type,
-      operation_name: operation.name,
-      framework_name: "/Absinthe/#{inspect(res.schema)}/#{operation.type}/#{operation.name}"
-    )
-
-    NewRelic.DistributedTrace.reset_span(previous: parent_span)
 
     attributes = %{
       "absinthe.schema": inspect(res.schema),
@@ -74,7 +56,7 @@ defmodule NewRelic.Absinthe.Middleware do
       attributes: attributes,
       pid: inspect(self()),
       id: span,
-      parent_id: parent_span || :root,
+      parent_id: :root,
       start_time: start_time,
       start_time_mono: start_time_mono,
       end_time_mono: end_time_mono
@@ -84,9 +66,9 @@ defmodule NewRelic.Absinthe.Middleware do
       timestamp_ms: System.convert_time_unit(start_time, :native, :milliseconds),
       duration_s: duration_ms / 1000,
       name: "#{inspect(resolver_mod)}.#{resolver_fun}/#{resolver_arity}",
-      edge: [span: span, parent: parent_span || :root],
+      edge: [span: span, parent: :root],
       category: "generic",
-      attributes: Map.merge(NewRelic.DistributedTrace.get_span_attrs(), attributes)
+      attributes: attributes
     )
 
     NewRelic.report_aggregate(
@@ -98,6 +80,26 @@ defmodule NewRelic.Absinthe.Middleware do
     )
 
     res
+  end
+
+  defp instrument_operation(:instrumented_operation, _res), do: :ignore
+
+  defp instrument_operation(_, res) do
+    operation = List.last(res.path)
+
+    framework_name =
+      case operation.name do
+        nil -> "/Absinthe/#{inspect(res.schema)}/#{operation.type}"
+        name -> "/Absinthe/#{inspect(res.schema)}/#{operation.type}/#{name}"
+      end
+
+    NewRelic.add_attributes(
+      "absinthe.schema": inspect(res.schema),
+      "absinthe.query_complexity": operation.complexity,
+      "absinthe.operation_type": operation.type,
+      "absinthe.operation_name": operation.name,
+      framework_name: framework_name
+    )
   end
 
   defp resolver_mfa({mod, fun}), do: {mod, fun, 3}

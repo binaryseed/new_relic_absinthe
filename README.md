@@ -32,8 +32,14 @@ end
 Define a custom middleware stack to install the instrumentation
 
 ```elixir
-def middleware(middleware, _field, _object) do
-  [NewRelic.Absinthe.Middleware] ++ middleware
+defmodule MyApp.Schema do
+  use Absinthe.Schema
+
+  def middleware(middleware, _field, _object) do
+    [NewRelic.Absinthe.Middleware] ++ middleware
+  end
+
+  # ...
 end
 ```
 
