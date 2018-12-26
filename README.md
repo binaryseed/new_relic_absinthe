@@ -1,6 +1,6 @@
 # New Relic Absinthe
 
-This package adds `Absinthe` specific instrumentation on top of the new_relic_agent package. You may use all the built-in capabilities of the New Relic Agent!
+This package adds `Absinthe` specific instrumentation on top of the `new_relic_agent` package. You may use all the built-in capabilities of the New Relic Agent!
 
 Check out the agent for more:
 
