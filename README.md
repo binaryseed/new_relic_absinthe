@@ -29,9 +29,11 @@ end
 
 ## Instrumentation
 
-* Add the middleware
+1) Setup the agent's Plug instrumentation
+  * https://github.com/newrelic/elixir_agent#plug
 
-Define a custom middleware stack to install the instrumentation
+2) Add the Absinthe middleware
+  * Define a custom middleware stack to install the instrumentation
 
 ```elixir
 defmodule MyApp.Schema do
@@ -48,8 +50,7 @@ end
 #### Tips
 
 * Use GraphQL's `OperationName`
-
-Transaction grouping is difficult with GraphQL since all queries go to one endpoint. Setting an Operation Name in your query enables improved Transaction grouping
+  * Transaction grouping is difficult with GraphQL since all queries go to one endpoint. Setting an Operation Name in your query enables improved Transaction grouping
 
 ```graphql
 query MyOperationName {
@@ -60,8 +61,7 @@ query MyOperationName {
 ```
 
 * Prefer named to anonymous resolvers for better span reporting:
-
-When you name your resolver, it makes your span names much more readable.
+  * When you name your resolver, it makes your span names much more readable.
 
 ```elixir
 resolve {MyMod, :function}
