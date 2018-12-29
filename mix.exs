@@ -5,7 +5,7 @@ defmodule NewRelicAbsinthe.MixProject do
     [
       app: :new_relic_absinthe,
       description: "New Relic Instrumentation adapter for Absinthe",
-      version: "0.0.0-rc.1",
+      version: "0.0.1",
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
       name: "New Relic Absinthe",
@@ -33,9 +33,9 @@ defmodule NewRelicAbsinthe.MixProject do
   defp deps do
     [
       {:ex_doc, ">= 0.0.0", only: :dev},
-      {:new_relic_agent, "~> 1.3"},
-      {:absinthe, ">= 1.4.0"},
-      {:absinthe_plug, ">= 1.4.0", only: :test}
+      {:new_relic_agent, "~> 1.4"},
+      {:absinthe, "~> 1.4.0"},
+      {:absinthe_plug, "~> 1.4.0", only: :test}
     ]
   end
 end
