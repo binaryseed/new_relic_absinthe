@@ -34,7 +34,7 @@ defmodule NewRelic.Absinthe.Middleware do
       ) do
     end_time_mono = System.monotonic_time()
     path = Absinthe.Resolution.path(res) |> Enum.join(".")
-    return_type = Absinthe.Type.name(res.definition.schema_node.type, res.schema)
+    type = Absinthe.Type.name(res.definition.schema_node.type, res.schema)
     args = res.arguments |> Map.to_list()
     span = {Absinthe.Resolution.path(res), make_ref()}
 
@@ -42,10 +42,11 @@ defmodule NewRelic.Absinthe.Middleware do
       System.convert_time_unit(end_time_mono - start_time_mono, :native, :milliseconds)
 
     attributes = %{
+      "absinthe.instrumentation": "resolver_function",
       "absinthe.schema": inspect(res.schema),
-      "absinthe.type": return_type,
+      "absinthe.type": type,
       "absinthe.field_name": res.definition.name,
-      "absinthe.path": path,
+      "absinthe.query_path": path,
       "absinthe.parent_type": res.parent_type.name,
       args: inspect(args)
     }

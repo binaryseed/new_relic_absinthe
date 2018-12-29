@@ -1,0 +1,10 @@
+language: elixir
+elixir: 1.7.3
+otp_release:
+  - 21.2
+notifications:
+  email:
+    - vince@newrelic.com
+script:
+  - mix format --check-formatted
+  - mix test
