@@ -1,6 +1,7 @@
 # New Relic Absinthe
 
 [![Hex.pm Version](https://img.shields.io/hexpm/v/new_relic_absinthe.svg)](https://hex.pm/packages/new_relic_absinthe)
+[![Build Status](https://travis-ci.org/binaryseed/new_relic_absinthe.svg?branch=master)](https://travis-ci.org/binaryseed/new_relic_absinthe)
 
 This package adds `Absinthe` specific instrumentation on top of the `new_relic_agent` package. You may use all the built-in capabilities of the New Relic Agent!
 
