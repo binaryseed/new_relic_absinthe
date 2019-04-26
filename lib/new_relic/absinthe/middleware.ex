@@ -39,7 +39,7 @@ defmodule NewRelic.Absinthe.Middleware do
     span = {Absinthe.Resolution.path(res), make_ref()}
 
     duration_ms =
-      System.convert_time_unit(end_time_mono - start_time_mono, :native, :milliseconds)
+      System.convert_time_unit(end_time_mono - start_time_mono, :native, :millisecond)
 
     attributes = %{
       "absinthe.instrumentation": "resolver_function",
@@ -64,7 +64,7 @@ defmodule NewRelic.Absinthe.Middleware do
     })
 
     NewRelic.report_span(
-      timestamp_ms: System.convert_time_unit(start_time, :native, :milliseconds),
+      timestamp_ms: System.convert_time_unit(start_time, :native, :millisecond),
       duration_s: duration_ms / 1000,
       name: "#{inspect(resolver_mod)}.#{resolver_fun}/#{resolver_arity}",
       edge: [span: span, parent: :root],
