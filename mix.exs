@@ -5,7 +5,7 @@ defmodule NewRelicAbsinthe.MixProject do
     [
       app: :new_relic_absinthe,
       description: "New Relic Instrumentation adapter for Absinthe",
-      version: "0.0.1",
+      version: "0.0.2",
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
       name: "New Relic Absinthe",
