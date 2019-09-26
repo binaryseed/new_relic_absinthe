@@ -35,7 +35,7 @@ defmodule NewRelic.Absinthe.Middleware do
     end_time_mono = System.monotonic_time()
     path = Absinthe.Resolution.path(res) |> Enum.join(".")
     type = Absinthe.Type.name(res.definition.schema_node.type, res.schema)
-    args = res.arguments |> Map.to_list()
+    args = filter_arguments(res.arguments) |> Map.to_list()
     span = {Absinthe.Resolution.path(res), make_ref()}
 
     duration_ms = System.convert_time_unit(end_time_mono - start_time_mono, :native, :millisecond)
@@ -81,6 +81,16 @@ defmodule NewRelic.Absinthe.Middleware do
 
     res
   end
+
+  defp filter_arguments(arguments) when is_map(arguments) do
+    filter_variables =
+    :new_relic_absinthe
+    |> Application.get_env(:filter_variables, [])
+
+    Map.drop(arguments, filter_variables)
+  end
+
+  defp filter_arguments(arguments), do: arguments
 
   defp instrument_operation(:instrumented_operation, _res), do: :ignore
 
