@@ -48,8 +48,7 @@ defmodule NewRelic.Absinthe.Middleware do
     args = res.arguments |> Map.to_list()
     span = {Absinthe.Resolution.path(res), make_ref()}
 
-    duration_ms =
-      System.convert_time_unit(end_time_mono - start_time_mono, :native, :millisecond)
+    duration_ms = System.convert_time_unit(end_time_mono - start_time_mono, :native, :millisecond)
 
     attributes = %{
       "absinthe.instrumentation": "resolver_function",
