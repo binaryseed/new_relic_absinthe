@@ -7,6 +7,7 @@ defmodule NewRelicAbsinthe.MixProject do
       description: "New Relic Instrumentation adapter for Absinthe",
       version: "0.0.2",
       elixir: "~> 1.7",
+      elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       name: "New Relic Absinthe",
       package: package(),
@@ -38,4 +39,7 @@ defmodule NewRelicAbsinthe.MixProject do
       {:absinthe_plug, "~> 1.4", only: :test}
     ]
   end
+
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
 end

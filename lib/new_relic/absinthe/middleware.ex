@@ -3,7 +3,19 @@ defmodule NewRelic.Absinthe.Middleware do
 
   @impl Absinthe.Middleware
 
-  def call(%{middleware: [{{Absinthe.Resolution, :call}, resolver_fn} | _]} = res, _config) do
+  def call(%{middleware: middleware} = res, _config) do
+    res_middleware = middleware |> Enum.find(&match?({{Absinthe.Resolution, :call}, _resolver_fn}, &1))
+    if res_middleware do
+      {_, resolver_fn} = res_middleware
+      instrument(res, resolver_fn)
+    else
+      res
+    end
+  end
+
+  def call(res, _config), do: res
+
+  defp instrument(res, resolver_fn) do
     start_time = System.system_time()
     start_time_mono = System.monotonic_time()
 
@@ -24,8 +36,6 @@ defmodule NewRelic.Absinthe.Middleware do
             ]
     }
   end
-
-  def call(res, _config), do: res
 
   def complete(%{state: :resolved} = res,
         resolver_mfa: {resolver_mod, resolver_fun, resolver_arity},

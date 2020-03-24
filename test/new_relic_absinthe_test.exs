@@ -8,7 +8,7 @@ defmodule NewRelicAbsintheTest do
     use Absinthe.Schema
 
     def middleware(middleware, _field, _object) do
-      [NewRelic.Absinthe.Middleware] ++ middleware
+      [NewRelic.Absinthe.Middleware, NewRelicAbsintheTest.FakeMiddleware] ++ middleware
     end
 
     query do
