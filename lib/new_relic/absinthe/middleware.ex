@@ -4,7 +4,9 @@ defmodule NewRelic.Absinthe.Middleware do
   @impl Absinthe.Middleware
 
   def call(%{middleware: middleware} = res, _config) do
-    res_middleware = middleware |> Enum.find(&match?({{Absinthe.Resolution, :call}, _resolver_fn}, &1))
+    res_middleware =
+      middleware |> Enum.find(&match?({{Absinthe.Resolution, :call}, _resolver_fn}, &1))
+
     if res_middleware do
       {_, resolver_fn} = res_middleware
       instrument(res, resolver_fn)
