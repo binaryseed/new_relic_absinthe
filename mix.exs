@@ -34,9 +34,10 @@ defmodule NewRelicAbsinthe.MixProject do
   defp deps do
     [
       {:ex_doc, ">= 0.0.0", only: :dev},
-      {:new_relic_agent, "~> 1.4"},
+      {:new_relic_agent, "~> 1.19"},
       {:absinthe, "~> 1.4"},
-      {:absinthe_plug, "~> 1.4", only: :test}
+      {:absinthe_plug, "~> 1.4", only: :test},
+      {:plug_cowboy, "~> 2.0", only: :test}
     ]
   end
 

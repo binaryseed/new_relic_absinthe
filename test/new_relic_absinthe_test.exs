@@ -79,12 +79,13 @@ defmodule NewRelicAbsintheTest do
   end
 
   defp query(query) do
-    HTTPoison.post!(
-      "http://localhost:#{@port}/graphql",
-      Jason.encode!(%{query: query}),
-      "content-type": "application/json"
-    )
-    |> Map.fetch!(:body)
+    {:ok, %{body: body}} =
+      http_request(
+        "http://localhost:#{@port}/graphql",
+        Jason.encode!(%{query: query})
+      )
+
+    body
     |> Jason.decode!()
     |> Map.fetch!("data")
   end
@@ -96,5 +97,14 @@ defmodule NewRelicAbsintheTest do
   defp gather_harvest(harvester) do
     Process.sleep(300)
     harvester.gather_harvest
+  end
+
+  def http_request(url, body) do
+    request = {'#{url}', [], 'application/json', body}
+
+    with {:ok, {{_, status_code, _}, _headers, body}} <-
+           :httpc.request(:post, request, [], []) do
+      {:ok, %{status_code: status_code, body: to_string(body)}}
+    end
   end
 end
