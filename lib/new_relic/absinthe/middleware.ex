@@ -47,8 +47,16 @@ defmodule NewRelic.Absinthe.Middleware do
     end_time_mono = System.monotonic_time()
     path = Absinthe.Resolution.path(res) |> Enum.join(".")
     type = Absinthe.Type.name(res.definition.schema_node.type, res.schema)
-    args = res.arguments |> Map.to_list()
     span = {Absinthe.Resolution.path(res), make_ref()}
+
+    args =
+      if NewRelic.Config.feature?(:function_argument_collection) do
+        res.arguments
+        |> Map.to_list()
+        |> inspect(charlists: :as_lists, limit: 5, printable_limit: 10)
+      else
+        "[DISABLED]"
+      end
 
     duration_ms = System.convert_time_unit(end_time_mono - start_time_mono, :native, :millisecond)
 
@@ -59,7 +67,7 @@ defmodule NewRelic.Absinthe.Middleware do
       "absinthe.field_name": res.definition.name,
       "absinthe.query_path": path,
       "absinthe.parent_type": res.parent_type.name,
-      args: inspect(args)
+      args: args
     }
 
     NewRelic.Transaction.Reporter.add_trace_segment(%{
