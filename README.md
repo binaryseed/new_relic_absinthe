@@ -41,7 +41,7 @@ defmodule MyApp.Schema do
   use Absinthe.Schema
 
   def middleware(middleware, _field, _object) do
-    [NewRelic.Absinthe.Middleware] ++ middleware
+    [NewRelic.Absinthe.Middleware | middleware]
   end
 
   # ...
